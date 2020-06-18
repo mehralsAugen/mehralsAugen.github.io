@@ -5,15 +5,17 @@
   
 
   
-  <title>qt多线程局域网聊天 | ShockLab</title>
+  <title>Qt+多线程局域网通讯工具 | ShockLab</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="article">
-<meta property="og:title" content="qt多线程局域网聊天">
+  <meta name="description" content="毕设花了大量时间做前端，我认识到后端才是项目的灵魂。前端虽然繁杂耗时，但深度是比不上后端业务的。就好比一台汽车，它的机电系统、盘身构架占了绝大部分成本一样，项目的后端总是核心部分。我好像记得马斯克在特斯拉新车揭幕时展示的新车其实是不能跑的，但我估计除了他没人有那个魄力。啊偶像！这里我想写一篇博文，记录一下我最近几天做的一个关于局域网通讯的小项目，后端编写原理简单但是结构比较复杂，实现效果有点类似q">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Qt+多线程局域网通讯工具">
 <meta property="og:url" content="http://yoursite.com/2020/06/18/qt%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B1%80%E5%9F%9F%E7%BD%91%E8%81%8A%E5%A4%A9/index.html">
 <meta property="og:site_name" content="ShockLab">
+<meta property="og:description" content="毕设花了大量时间做前端，我认识到后端才是项目的灵魂。前端虽然繁杂耗时，但深度是比不上后端业务的。就好比一台汽车，它的机电系统、盘身构架占了绝大部分成本一样，项目的后端总是核心部分。我好像记得马斯克在特斯拉新车揭幕时展示的新车其实是不能跑的，但我估计除了他没人有那个魄力。啊偶像！这里我想写一篇博文，记录一下我最近几天做的一个关于局域网通讯的小项目，后端编写原理简单但是结构比较复杂，实现效果有点类似q">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-06-18T11:45:12.060Z">
-<meta property="article:modified_time" content="2020-06-18T11:54:47.351Z">
+<meta property="article:modified_time" content="2020-06-18T12:55:07.630Z">
 <meta property="article:author" content="m15656232506@163.com">
 <meta name="twitter:card" content="summary">
   
@@ -78,7 +80,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      qt多线程局域网聊天
+      Qt+多线程局域网通讯工具
     </h1>
   
 
@@ -86,11 +88,19 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>毕设花了大量时间做前端，我认识到后端才是项目的灵魂。前端虽然繁杂耗时，但深度是比不上后端业务的。就好比一台汽车，它的机电系统、盘身构架占了绝大部分成本一样，项目的后端总是核心部分。我好像记得马斯克在特斯拉新车揭幕时展示的新车其实是不能跑的，但我估计除了他没人有那个魄力。啊偶像！<br>这里我想写一篇博文，记录一下我最近几天做的一个关于局域网通讯的小项目，后端编写原理简单但是结构比较复杂，实现效果有点类似qq或者微信的功能。灵魂拷问：为什么不直接用qq微信呢？好玩呗！<br>下面从几个点初步介绍一下这个应用。</p>
+<ul>
+<li>语言：纯Python（如果完全模仿qq的模式，注册页在浏览器中实现，则需要其他web前后端语言的支持）；</li>
+<li>通讯协议：TCP；</li>
+<li>架构：C/S(网上大多socket实例都是p2p，没有把服务器客户端真正用起来)；</li>
+<li>Python包：PyQt5(ui界面)、socket（底层通讯）、json（数据装包拆包）、pymysql（数据库）、sys等系统/辅助函数包等。</li>
+<li>底层功能：注册登陆（逻辑判断，数据库连接）、发送字符消息、传送文件（正在整合哦！）等。<br>做事要彻底。网上有很多类似的程序，但是要和qq微信完全一样还是有很大差距的。本应用的框架按qq来搭建，但与qq稍有不同。<br>单端情况下，微信不能同时和两个人聊天，qq可以。我模仿了qq的用户列表—聊天界面分离的模式与微信的单聊切换模式。<br>服务器程序始终运行，提供同时最多1000个客户端连接、登陆注册以及提出其他请求的端口。服务器是中转站与客户端用户信息的存储点；而客户端负责存储各自的聊天记录并在每次运行时读取解析显示到ui中。<br>qq的接收消息在左、发送消息在右且都是气泡框的实现方法有点困扰我，现在做成了仅仅是文本但收左发右的效果，之后相信可以找到解决办法。<br>qq漫游肯定是在qq的服务器上，但qq是有本地聊天记录文件的，是一个msg什么的.db文件，用qq自带的消息管理器可以解析读取。其实聊天记录的单位很简单，每一条就是<code>who</code>在<code>when</code>发给了<code>whom</code>以<code>what</code>，用python字典可以表示成为{‘sender’:…,’receiver’:…,’time’:…,’value’:…}(顺序没有对应)。<br>服务器知道啥？服务器知道谁注册了（数据库里）还有这个用户的巴拉巴拉（id用户名密码…）；现在谁在线（以及其所占用的端口、用户名…）。<br>客户端知道啥？我是谁，我现在在和谁说话。<br>客户端不知道的东西可以问服务器。<br>基于以上乱七八糟的分析开始了项目。<br>（待更）</li>
+</ul>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/06/18/qt%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B1%80%E5%9F%9F%E7%BD%91%E8%81%8A%E5%A4%A9/" data-id="ckbkqh1df0001tgvv9xboaaqj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/06/18/qt%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B1%80%E5%9F%9F%E7%BD%91%E8%81%8A%E5%A4%A9/" data-id="ckbkstuv90001uwvv16c92uuk" class="article-share-link">Share</a>
       
       
     </footer>
@@ -139,7 +149,7 @@
       <ul>
         
           <li>
-            <a href="/2020/06/18/qt%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B1%80%E5%9F%9F%E7%BD%91%E8%81%8A%E5%A4%A9/">qt多线程局域网聊天</a>
+            <a href="/2020/06/18/qt%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B1%80%E5%9F%9F%E7%BD%91%E8%81%8A%E5%A4%A9/">Qt+多线程局域网通讯工具</a>
           </li>
         
           <li>
